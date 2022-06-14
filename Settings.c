@@ -766,6 +766,8 @@ Settings* Settings_new(unsigned int initialCpuCount, Hashtable* dynamicColumns) 
    this->ssIndex = 0;
    this->ss = this->screens[this->ssIndex];
 
+   this->lastUpdate = 1;
+
    return this;
 }
 
