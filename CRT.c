@@ -834,7 +834,7 @@ static void dumpStderr(void) {
             fprintf(stderr, ">>>>>>>>>> stderr output >>>>>>>>>>\n");
             header = true;
          }
-         (void)! write(STDERR_FILENO, buffer, res);
+         full_write(STDERR_FILENO, buffer, res);
       }
    }
 
@@ -1013,9 +1013,11 @@ IGNORE_WCASTQUAL_END
 }
 
 void CRT_done() {
-   attron(CRT_colors[RESET_COLOR]);
+   int resetColor = CRT_colors ? CRT_colors[RESET_COLOR] : CRT_colorSchemes[COLORSCHEME_DEFAULT][RESET_COLOR];
+
+   attron(resetColor);
    mvhline(LINES - 1, 0, ' ', COLS);
-   attroff(CRT_colors[RESET_COLOR]);
+   attroff(resetColor);
    refresh();
 
    curs_set(1);
