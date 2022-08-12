@@ -44,7 +44,7 @@ static uid_t Process_getuid = (uid_t)-1;
 int Process_pidDigits = PROCESS_MIN_PID_DIGITS;
 int Process_uidDigits = PROCESS_MIN_UID_DIGITS;
 
-void Process_setupColumnWidths() {
+void Process_setupColumnWidths(void) {
    int maxPid = Platform_getMaxPid();
    if (maxPid == -1)
       return;
@@ -782,19 +782,11 @@ void Process_writeField(const Process* this, RichString* str, ProcessField field
       }
 
       char* buf = buffer;
-      int maxIndent = 0;
-      bool lastItem = (this->indent < 0);
-      int indent = (this->indent < 0 ? -this->indent : this->indent);
+      const bool lastItem = (this->indent < 0);
 
-      for (int i = 0; i < 32; i++) {
-         if (indent & (1U << i)) {
-            maxIndent = i + 1;
-         }
-      }
-
-      for (int i = 0; i < maxIndent - 1; i++) {
+      for (uint32_t indent = (this->indent < 0 ? -this->indent : this->indent); indent > 1; indent >>= 1) {
          int written, ret;
-         if (indent & (1 << i)) {
+         if (indent & 1U) {
             ret = xSnprintf(buf, n, "%s  ", CRT_treeStr[TREE_STR_VERT]);
          } else {
             ret = xSnprintf(buf, n, "   ");
@@ -1248,7 +1240,7 @@ void Process_updateExe(Process* this, const char* exe) {
 
 uint8_t Process_fieldWidths[LAST_PROCESSFIELD] = { 0 };
 
-void Process_resetFieldWidths() {
+void Process_resetFieldWidths(void) {
    for (size_t i = 0; i < LAST_PROCESSFIELD; i++) {
       if (!Process_fields[i].autoWidth)
          continue;
